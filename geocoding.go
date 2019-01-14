@@ -62,7 +62,7 @@ func (ygi *YaGeoInstance) Find(address string) (result *YaGeoResponse, err error
 }
 
 // RangeBtw returns range in meters between two addresses (generates two requests to API)
-func (ygi *YaGeoInstance) RangeBtw(address1, address2 string) (float64, error ){
+func (ygi *YaGeoInstance) RangeBtw(address1, address2 string) (float64, error) {
 	addr1, err1 := ygi.Find(address1)
 	if err1 != nil {
 		return 0, err1
@@ -72,12 +72,12 @@ func (ygi *YaGeoInstance) RangeBtw(address1, address2 string) (float64, error ){
 		return 0, err2
 	}
 
-	earthRadius := float64(6371000)	// Earth's radius in meters
+	earthRadius := float64(6371000) // Earth's radius in meters
 	difLat := deg2rad(addr1.Latitude() - addr2.Latitude())
 	difLng := deg2rad(addr1.Longitude() - addr2.Longitude())
-	a := math.Sin(difLat / 2) * math.Sin(difLat / 2) +
-		math.Cos(addr2.Latitude()) * math.Cos(addr1.Latitude()) *
-		math.Sin(difLng / 2) * math.Sin(difLng / 2)
+	a := math.Sin(difLat/2)*math.Sin(difLat/2) +
+		math.Cos(addr2.Latitude())*math.Cos(addr1.Latitude())*
+			math.Sin(difLng/2)*math.Sin(difLng/2)
 	c := 2 * math.Asin(math.Sqrt(a))
 	distance := earthRadius * c
 
@@ -86,12 +86,12 @@ func (ygi *YaGeoInstance) RangeBtw(address1, address2 string) (float64, error ){
 
 // RangeToResponse returns range in meters to another address by completed response
 func (response *YaGeoResponse) RangeToResponse(resp *YaGeoResponse) float64 {
-	earthRadius := float64(6371000)	// Earth's radius in meters
+	earthRadius := float64(6371000) // Earth's radius in meters
 	difLat := deg2rad(response.Latitude() - resp.Latitude())
 	difLng := deg2rad(response.Longitude() - resp.Longitude())
-	a := math.Sin(difLat / 2) * math.Sin(difLat / 2) +
-		math.Cos(resp.Latitude()) * math.Cos(response.Latitude()) *
-			math.Sin(difLng / 2) * math.Sin(difLng / 2)
+	a := math.Sin(difLat/2)*math.Sin(difLat/2) +
+		math.Cos(resp.Latitude())*math.Cos(response.Latitude())*
+			math.Sin(difLng/2)*math.Sin(difLng/2)
 	c := 2 * math.Asin(math.Sqrt(a))
 	distance := earthRadius * c
 
@@ -178,4 +178,70 @@ func (response *YaGeoResponse) AddressComponents() *[]YaGeoAddressComponent {
 		return nil
 	}
 	return &response.Response.ObjectCollection.Members[0].GeoObject.MetaData.Meta.Address.Components
+}
+
+// Country returns country name for first address
+func (response *YaGeoResponse) Country() string {
+	str := ""
+	for _, v := range response.Response.ObjectCollection.Members[0].GeoObject.MetaData.Meta.Address.Components {
+		if v.Kind == "country" {
+			str = v.Name
+		}
+	}
+	return str
+}
+
+// Province returns array of province names for first address
+func (response *YaGeoResponse) Province() []string {
+	var newArray []string
+	for _, v := range response.Response.ObjectCollection.Members[0].GeoObject.MetaData.Meta.Address.Components {
+		if v.Kind == "province" {
+			newArray = append(newArray, v.Name)
+		}
+	}
+	return newArray
+}
+
+// Area returns area name for first address
+func (response *YaGeoResponse) Area() string {
+	str := ""
+	for _, v := range response.Response.ObjectCollection.Members[0].GeoObject.MetaData.Meta.Address.Components {
+		if v.Kind == "area" {
+			str = v.Name
+		}
+	}
+	return str
+}
+
+// Locality return name of city or another place type (for first address)
+func (response *YaGeoResponse) Locality() string {
+	str := ""
+	for _, v := range response.Response.ObjectCollection.Members[0].GeoObject.MetaData.Meta.Address.Components {
+		if v.Kind == "locality" {
+			str = v.Name
+		}
+	}
+	return str
+}
+
+// Street return name of street for first address
+func (response *YaGeoResponse) Street() string {
+	str := ""
+	for _, v := range response.Response.ObjectCollection.Members[0].GeoObject.MetaData.Meta.Address.Components {
+		if v.Kind == "street" {
+			str = v.Name
+		}
+	}
+	return str
+}
+
+// House returns house designation for first address
+func (response *YaGeoResponse) House() string {
+	str := ""
+	for _, v := range response.Response.ObjectCollection.Members[0].GeoObject.MetaData.Meta.Address.Components {
+		if v.Kind == "house" {
+			str = v.Name
+		}
+	}
+	return str
 }

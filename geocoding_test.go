@@ -170,10 +170,10 @@ func TestYaGeoInstance_Find(t *testing.T) {
 		address string
 	}
 	tests := []struct {
-		name       string
-		fields     fields
-		args       args
-		wantErr    bool
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
 	}{
 		{
 			"Test Find() function",
@@ -197,4 +197,83 @@ func TestYaGeoInstance_Find(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestYaGeoResponse_Country(t *testing.T) {
+	key := os.Getenv("YAGEO_KEY")
+	response, err := New(key).Find("Челябинск, Захаренко, 2")
+	t.Run("Get Country", func(t *testing.T) {
+		if err != nil {
+			t.Errorf("YaGeoMember.CountryCode() has error: %v", err.Error())
+		}
+		if got := response.Country(); got != "Россия" {
+			t.Errorf("YaGeoMember.Country() = %v, want %v", got, "Россия")
+		}
+	})
+}
+
+func TestYaGeoResponse_Area(t *testing.T) {
+	key := os.Getenv("YAGEO_KEY")
+	response, err := New(key).Find("Челябинск, Захаренко, 2")
+	t.Run("Get Area", func(t *testing.T) {
+		if err != nil {
+			t.Errorf("YaGeoMember.CountryCode() has error: %v", err.Error())
+		}
+		if got := response.Area(); got != "городской округ Челябинск" {
+			t.Errorf("YaGeoMember.Area() = %v, want %v", got, "городской округ Челябинск")
+		}
+	})
+}
+
+func TestYaGeoResponse_Province(t *testing.T) {
+	want := []string{"Уральский федеральный округ", "Челябинская область"}
+	key := os.Getenv("YAGEO_KEY")
+	response, err := New(key).Find("Челябинск, Захаренко, 2")
+	t.Run("Get Province", func(t *testing.T) {
+		if err != nil {
+			t.Errorf("YaGeoMember.CountryCode() has error: %v", err.Error())
+		}
+		if got := response.Province(); !reflect.DeepEqual(got, want) {
+			t.Errorf("YaGeoMember.Province() = %v, want %v", got, want)
+		}
+	})
+}
+
+func TestYaGeoResponse_Locality(t *testing.T) {
+	key := os.Getenv("YAGEO_KEY")
+	response, err := New(key).Find("Челябинск, Захаренко, 2")
+	t.Run("Get Locality", func(t *testing.T) {
+		if err != nil {
+			t.Errorf("YaGeoMember.CountryCode() has error: %v", err.Error())
+		}
+		if got := response.Locality(); got != "Челябинск" {
+			t.Errorf("YaGeoMember.Locality() = %v, want %v", got, "Челябинск")
+		}
+	})
+}
+
+func TestYaGeoResponse_Street(t *testing.T) {
+	key := os.Getenv("YAGEO_KEY")
+	response, err := New(key).Find("Челябинск, Захаренко, 2")
+	t.Run("Get Street", func(t *testing.T) {
+		if err != nil {
+			t.Errorf("YaGeoMember.CountryCode() has error: %v", err.Error())
+		}
+		if got := response.Street(); got != "улица Захаренко" {
+			t.Errorf("YaGeoMember.Street() = %v, want %v", got, "улица Захаренко")
+		}
+	})
+}
+
+func TestYaGeoResponse_House(t *testing.T) {
+	key := os.Getenv("YAGEO_KEY")
+	response, err := New(key).Find("Челябинск, Захаренко, 2")
+	t.Run("Get House", func(t *testing.T) {
+		if err != nil {
+			t.Errorf("YaGeoMember.CountryCode() has error: %v", err.Error())
+		}
+		if got := response.House(); got != "2" {
+			t.Errorf("YaGeoMember.House() = %v, want %v", got, "2")
+		}
+	})
 }

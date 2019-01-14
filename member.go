@@ -78,6 +78,7 @@ func (member *YaGeoMember) AddressComponents() *[]YaGeoAddressComponent {
 	return &member.GeoObject.MetaData.Meta.Address.Components
 }
 
+// GetComponentsByKind returns address components sorted by kind
 func (member *YaGeoMember) GetComponentsByKind(kind string) []*YaGeoAddressComponent {
 	var newArray []*YaGeoAddressComponent
 	for _, val := range member.GeoObject.MetaData.Meta.Address.Components {
@@ -86,4 +87,70 @@ func (member *YaGeoMember) GetComponentsByKind(kind string) []*YaGeoAddressCompo
 		}
 	}
 	return newArray
+}
+
+// Country returns country name
+func (member *YaGeoMember) Country() string {
+	str := ""
+	for _, v := range member.GeoObject.MetaData.Meta.Address.Components {
+		if v.Kind == "country" {
+			str = v.Name
+		}
+	}
+	return str
+}
+
+// Province returns array of province names
+func (member *YaGeoMember) Province() []string {
+	var newArray []string
+	for _, v := range member.GeoObject.MetaData.Meta.Address.Components {
+		if v.Kind == "province" {
+			newArray = append(newArray, v.Name)
+		}
+	}
+	return newArray
+}
+
+// Area returns area name
+func (member *YaGeoMember) Area() string {
+	str := ""
+	for _, v := range member.GeoObject.MetaData.Meta.Address.Components {
+		if v.Kind == "area" {
+			str = v.Name
+		}
+	}
+	return str
+}
+
+// Locality return name of city or another place type
+func (member *YaGeoMember) Locality() string {
+	str := ""
+	for _, v := range member.GeoObject.MetaData.Meta.Address.Components {
+		if v.Kind == "locality" {
+			str = v.Name
+		}
+	}
+	return str
+}
+
+// Street return name of street
+func (member *YaGeoMember) Street() string {
+	str := ""
+	for _, v := range member.GeoObject.MetaData.Meta.Address.Components {
+		if v.Kind == "street" {
+			str = v.Name
+		}
+	}
+	return str
+}
+
+// House returns house designation
+func (member *YaGeoMember) House() string {
+	str := ""
+	for _, v := range member.GeoObject.MetaData.Meta.Address.Components {
+		if v.Kind == "house" {
+			str = v.Name
+		}
+	}
+	return str
 }
