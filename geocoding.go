@@ -3,6 +3,7 @@ package yageocoding
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"net/http"
 	"strconv"
 	"strings"
@@ -55,6 +56,29 @@ func (ygi *YaGeoInstance) Find(address string) (result *YaGeoResponse, err error
 	return result, nil
 }
 
+// RangeBtw returns range in meters between two addresses
+func (ygi *YaGeoInstance) RangeBtw(address1, address2 string) (float64, error ){
+	addr1, err1 := ygi.Find(address1)
+	if err1 != nil {
+		return 0, err1
+	}
+	addr2, err2 := ygi.Find(address2)
+	if err1 != nil {
+		return 0, err2
+	}
+
+	earthRadius := float64(6371000)	// Earth's radius in meters
+	difLat := deg2rad(addr1.Latitude() - addr2.Latitude())
+	difLng := deg2rad(addr1.Longitude() - addr2.Longitude())
+	a := math.Sin(difLat / 2) * math.Sin(difLat / 2) +
+		math.Cos(addr2.Latitude()) * math.Cos(addr1.Latitude()) *
+		math.Sin(difLng / 2) * math.Sin(difLng / 2)
+	c := 2 * math.Asin(math.Sqrt(a))
+	distance := earthRadius * c
+
+	return distance, nil
+}
+
 // Members returns array of founded results of search
 func (response *YaGeoResponse) Members() *[]YaGeoMember {
 	return &response.Response.ObjectCollection.Members
@@ -93,7 +117,7 @@ func (response *YaGeoResponse) Latitude() float64 {
 		return 0
 	}
 	coords := strings.Split(response.Response.ObjectCollection.Members[0].GeoObject.Point.Pos, " ")
-	latitude, errlat := strconv.ParseFloat(coords[0], 64)
+	latitude, errlat := strconv.ParseFloat(coords[1], 64)
 	if errlat != nil {
 		return 0
 	}
@@ -106,7 +130,7 @@ func (response *YaGeoResponse) Longitude() float64 {
 		return 0
 	}
 	coords := strings.Split(response.Response.ObjectCollection.Members[0].GeoObject.Point.Pos, " ")
-	longitude, errlon := strconv.ParseFloat(coords[1], 64)
+	longitude, errlon := strconv.ParseFloat(coords[0], 64)
 	if errlon != nil {
 		return 0
 	}
