@@ -56,7 +56,7 @@ func (ygi *YaGeoInstance) Find(address string) (result *YaGeoResponse, err error
 	return result, nil
 }
 
-// RangeBtw returns range in meters between two addresses
+// RangeBtw returns range in meters between two addresses (generates two requests to API)
 func (ygi *YaGeoInstance) RangeBtw(address1, address2 string) (float64, error ){
 	addr1, err1 := ygi.Find(address1)
 	if err1 != nil {
@@ -98,12 +98,12 @@ func (response *YaGeoResponse) Coordinates() (latitude float64, longitude float6
 		return 0, 0
 	}
 	coords := strings.Split(response.Response.ObjectCollection.Members[0].GeoObject.Point.Pos, " ")
-	latitude, errlat := strconv.ParseFloat(coords[0], 64)
+	latitude, errlat := strconv.ParseFloat(coords[1], 64)
 	if errlat != nil {
 		return 0, 0
 	}
 
-	longitude, errlon := strconv.ParseFloat(coords[1], 64)
+	longitude, errlon := strconv.ParseFloat(coords[0], 64)
 	if errlon != nil {
 		return 0, 0
 	}
