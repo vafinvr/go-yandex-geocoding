@@ -2,6 +2,7 @@ package yageocoding
 
 import (
 	"os"
+	"reflect"
 	"testing"
 )
 
@@ -109,6 +110,54 @@ func TestYaGeoResponse_PostalCode(t *testing.T) {
 		}
 		if got := response.PostalCode(); got != "454014" {
 			t.Errorf("YaGeoResponse.PostalCode() = %v, want %v", got, "454014")
+		}
+	})
+}
+
+func TestYaGeoResponse_AddressComponents(t *testing.T) {
+	array := []YaGeoAddressComponent{
+		{Name: "Россия", Kind: "country"},
+		{Name: "Уральский федеральный округ", Kind: "province"},
+		{Name: "Челябинская область", Kind: "province"},
+		{Name: "городской округ Челябинск", Kind: "area"},
+		{Name: "Челябинск", Kind: "locality"},
+		{Name: "улица Захаренко", Kind: "street"},
+		{Name: "2", Kind: "house"},
+	}
+	want := &array
+	key := os.Getenv("YAGEO_KEY")
+	response, err := New(key).Find("Челябинск, Захаренко, 2")
+	t.Run("Get postal code", func(t *testing.T) {
+		if err != nil {
+			t.Errorf("YaGeoMember.CountryCode() has error: %v", err.Error())
+		}
+		if got := response.AddressComponents(); !reflect.DeepEqual(got, want) {
+			t.Errorf("YaGeoMember.AddressComponents() = %v, want %v", got, want)
+		}
+	})
+}
+
+func TestYaGeoResponse_RangeToResponse(t *testing.T) {
+	response1, err := New(os.Getenv("YAGEO_KEY")).Find("Челябинск, Захаренко, 2")
+	response2, err := New(os.Getenv("YAGEO_KEY")).Find("Челябинск, Захаренко, 5")
+	t.Run("Get postal code", func(t *testing.T) {
+		if err != nil {
+			t.Errorf("YaGeoResponse.CountryCode() has error: %v", err.Error())
+		}
+		if got := response1.RangeToResponse(response2); got != 143.70860825840776 {
+			t.Errorf("YaGeoResponse.RangeToResponse() = %v, want %v", got, 143.70860825840776)
+		}
+	})
+}
+
+func TestYaGeoResponse_Address(t *testing.T) {
+	response, err := New(os.Getenv("YAGEO_KEY")).Find("Челябинск, Захаренко, 2")
+	t.Run("Get postal code", func(t *testing.T) {
+		if err != nil {
+			t.Errorf("YaGeoResponse.CountryCode() has error: %v", err.Error())
+		}
+		if got := response.Address(); got != "Россия, Челябинск, улица Захаренко, 2" {
+			t.Errorf("YaGeoResponse.Address() = %v, want %v", got, "Россия, Челябинск, улица Захаренко, 2")
 		}
 	})
 }

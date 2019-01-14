@@ -2,6 +2,7 @@ package yageocoding
 
 import (
 	"os"
+	"reflect"
 	"testing"
 )
 
@@ -10,7 +11,7 @@ func TestYaGeoMember_Coordinates(t *testing.T) {
 	response, err := New(key).Find("Челябинск, Захаренко, 2")
 	members := *response.Members()
 	t.Run("Get coordinates", func(t *testing.T) {
-		gotLatitude, gotLongitude :=  members[0].Coordinates()
+		gotLatitude, gotLongitude := members[0].Coordinates()
 		if err != nil {
 			t.Errorf("YaGeoMember.Coordinates() has error: %v", err.Error())
 		}
@@ -75,6 +76,30 @@ func TestYaGeoMember_PostalCode(t *testing.T) {
 		}
 		if got := members[0].PostalCode(); got != "454014" {
 			t.Errorf("YaGeoMember.PostalCode() = %v, want %v", got, "454014")
+		}
+	})
+}
+
+func TestYaGeoMember_AddressComponents(t *testing.T) {
+	array := []YaGeoAddressComponent{
+		{Name:"Россия", Kind:"country"},
+		{Name:"Уральский федеральный округ",Kind:"province"},
+		{Name:"Челябинская область", Kind:"province"},
+		{Name:"городской округ Челябинск", Kind:"area"},
+		{Name:"Челябинск", Kind:"locality"},
+		{Name:"улица Захаренко", Kind:"street"},
+		{Name:"2", Kind:"house"},
+	}
+	want := &array
+	key := os.Getenv("YAGEO_KEY")
+	response, err := New(key).Find("Челябинск, Захаренко, 2")
+	members := *response.Members()
+	t.Run("Get postal code", func(t *testing.T) {
+		if err != nil {
+			t.Errorf("YaGeoMember.CountryCode() has error: %v", err.Error())
+		}
+		if got := members[0].AddressComponents(); !reflect.DeepEqual(got, want) {
+			t.Errorf("YaGeoMember.AddressComponents() = %v, want %v", got, want)
 		}
 	})
 }

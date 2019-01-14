@@ -79,6 +79,20 @@ func (ygi *YaGeoInstance) RangeBtw(address1, address2 string) (float64, error ){
 	return distance, nil
 }
 
+// RangeToResponse returns range in meters to another address by completed response
+func (response *YaGeoResponse) RangeToResponse(resp *YaGeoResponse) float64 {
+	earthRadius := float64(6371000)	// Earth's radius in meters
+	difLat := deg2rad(response.Latitude() - resp.Latitude())
+	difLng := deg2rad(response.Longitude() - resp.Longitude())
+	a := math.Sin(difLat / 2) * math.Sin(difLat / 2) +
+		math.Cos(resp.Latitude()) * math.Cos(response.Latitude()) *
+			math.Sin(difLng / 2) * math.Sin(difLng / 2)
+	c := 2 * math.Asin(math.Sqrt(a))
+	distance := earthRadius * c
+
+	return distance
+}
+
 // Members returns array of founded results of search
 func (response *YaGeoResponse) Members() *[]YaGeoMember {
 	return &response.Response.ObjectCollection.Members
