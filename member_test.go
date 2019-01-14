@@ -82,15 +82,30 @@ func TestYaGeoMember_PostalCode(t *testing.T) {
 
 func TestYaGeoMember_AddressComponents(t *testing.T) {
 	array := []YaGeoAddressComponent{
-		{Name:"Россия", Kind:"country"},
-		{Name:"Уральский федеральный округ",Kind:"province"},
-		{Name:"Челябинская область", Kind:"province"},
-		{Name:"городской округ Челябинск", Kind:"area"},
-		{Name:"Челябинск", Kind:"locality"},
-		{Name:"улица Захаренко", Kind:"street"},
-		{Name:"2", Kind:"house"},
+		{Name: "Россия", Kind: "country"},
+		{Name: "Уральский федеральный округ", Kind: "province"},
+		{Name: "Челябинская область", Kind: "province"},
+		{Name: "городской округ Челябинск", Kind: "area"},
+		{Name: "Челябинск", Kind: "locality"},
+		{Name: "улица Захаренко", Kind: "street"},
+		{Name: "2", Kind: "house"},
 	}
 	want := &array
+	key := os.Getenv("YAGEO_KEY")
+	response, err := New(key).Find("Челябинск, Захаренко, 2")
+	members := *response.Members()
+	t.Run("Get address components", func(t *testing.T) {
+		if err != nil {
+			t.Errorf("YaGeoMember.CountryCode() has error: %v", err.Error())
+		}
+		if got := members[0].AddressComponents(); !reflect.DeepEqual(got, want) {
+			t.Errorf("YaGeoMember.AddressComponents() = %v, want %v", got, want)
+		}
+	})
+}
+
+func TestYaGeoMember_GetComponentsByKind(t *testing.T) {
+	want := []*YaGeoAddressComponent{{"house","2"}}
 	key := os.Getenv("YAGEO_KEY")
 	response, err := New(key).Find("Челябинск, Захаренко, 2")
 	members := *response.Members()
@@ -98,8 +113,8 @@ func TestYaGeoMember_AddressComponents(t *testing.T) {
 		if err != nil {
 			t.Errorf("YaGeoMember.CountryCode() has error: %v", err.Error())
 		}
-		if got := members[0].AddressComponents(); !reflect.DeepEqual(got, want) {
-			t.Errorf("YaGeoMember.AddressComponents() = %v, want %v", got, want)
+		if got := members[0].GetComponentsByKind("house"); !reflect.DeepEqual(got, want) {
+			t.Errorf("YaGeoMember.GetComponentsByKind() = %v, want %v", got, want)
 		}
 	})
 }

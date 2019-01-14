@@ -77,3 +77,13 @@ func (member *YaGeoMember) PostalCode() string {
 func (member *YaGeoMember) AddressComponents() *[]YaGeoAddressComponent {
 	return &member.GeoObject.MetaData.Meta.Address.Components
 }
+
+func (member *YaGeoMember) GetComponentsByKind(kind string) []*YaGeoAddressComponent {
+	var newArray []*YaGeoAddressComponent
+	for _, val := range member.GeoObject.MetaData.Meta.Address.Components {
+		if val.Kind == kind {
+			newArray = append(newArray, &val)
+		}
+	}
+	return newArray
+}

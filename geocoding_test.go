@@ -161,3 +161,40 @@ func TestYaGeoResponse_Address(t *testing.T) {
 		}
 	})
 }
+
+func TestYaGeoInstance_Find(t *testing.T) {
+	type fields struct {
+		Key string
+	}
+	type args struct {
+		address string
+	}
+	tests := []struct {
+		name       string
+		fields     fields
+		args       args
+		wantErr    bool
+	}{
+		{
+			"Test Find() function",
+			fields{os.Getenv("YAGEO_KEY")},
+			args{"Челябинск, Захаренко, 2"},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ygi := &YaGeoInstance{
+				Key: tt.fields.Key,
+			}
+			gotResult, err := ygi.Find(tt.args.address)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("YaGeoInstance.Find() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if gotResult.Response.ObjectCollection.MetaData.ResponseMetaData.Request != tt.args.address {
+				t.Errorf("YaGeoInstance.Find() = %v, want %v", gotResult.Response.ObjectCollection.MetaData.ResponseMetaData.Request, tt.args.address)
+			}
+		})
+	}
+}

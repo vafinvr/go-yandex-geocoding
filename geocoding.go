@@ -2,6 +2,7 @@ package yageocoding
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math"
 	"net/http"
@@ -51,6 +52,10 @@ func (ygi *YaGeoInstance) Find(address string) (result *YaGeoResponse, err error
 	err = json.NewDecoder(resp.Body).Decode(&result)
 	if err != nil {
 		return result, err
+	}
+
+	if len(result.Response.ObjectCollection.Members) == 0 {
+		return result, errors.New("Not found")
 	}
 
 	return result, nil
