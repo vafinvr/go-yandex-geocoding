@@ -131,7 +131,7 @@ func (member *YaGeoMember) Street() string {
 	return str
 }
 
-// RangeToResponse returns range in meters to another address by completed response
+// RangeToMember returns range in meters to another member
 func (member *YaGeoMember) RangeToMember(target *YaGeoMember) float64 {
 	earthRadius := float64(6371000) // Earth's radius in meters
 	difLat := deg2rad(member.Latitude() - target.Latitude())
