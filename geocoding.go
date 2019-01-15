@@ -105,65 +105,70 @@ func (response *YaGeoResponse) Members() *[]YaGeoMember {
 
 // Address returns full address of first founded element
 func (response *YaGeoResponse) Address() string {
+	str := ""
 	if len(response.Response.ObjectCollection.Members) > 0 {
-		return response.Response.ObjectCollection.Members[0].GeoObject.MetaData.Meta.Text
+		str = response.Response.ObjectCollection.Members[0].GeoObject.MetaData.Meta.Text
 	}
-	return ""
+	return str
 }
 
 // Coordinates returns Latitude and Longitude of first member
 func (response *YaGeoResponse) Coordinates() (latitude float64, longitude float64) {
-	if len(response.Response.ObjectCollection.Members) == 0 {
-		return 0, 0
+	latitude = 0
+	longitude = 0
+	if len(response.Response.ObjectCollection.Members) > 0 {
+		coords := strings.Split(response.Response.ObjectCollection.Members[0].GeoObject.Point.Pos, " ")
+		latitude, _ = strconv.ParseFloat(coords[1], 64)
+		longitude, _ = strconv.ParseFloat(coords[0], 64)
 	}
-	coords := strings.Split(response.Response.ObjectCollection.Members[0].GeoObject.Point.Pos, " ")
-	latitude, _ = strconv.ParseFloat(coords[1], 64)
-	longitude, _ = strconv.ParseFloat(coords[0], 64)
 	return
 }
 
 // Latitude of first member
 func (response *YaGeoResponse) Latitude() float64 {
-	if len(response.Response.ObjectCollection.Members) == 0 {
-		return 0
+	latitude := 0.0
+	if len(response.Response.ObjectCollection.Members) > 0 {
+		coords := strings.Split(response.Response.ObjectCollection.Members[0].GeoObject.Point.Pos, " ")
+		latitude, _ = strconv.ParseFloat(coords[1], 64)
 	}
-	coords := strings.Split(response.Response.ObjectCollection.Members[0].GeoObject.Point.Pos, " ")
-	latitude, _ := strconv.ParseFloat(coords[1], 64)
 	return latitude
 }
 
 // Longitude of first member
 func (response *YaGeoResponse) Longitude() float64 {
-	if len(response.Response.ObjectCollection.Members) == 0 {
-		return 0
+	longitude := 0.0
+	if len(response.Response.ObjectCollection.Members) > 0 {
+		coords := strings.Split(response.Response.ObjectCollection.Members[0].GeoObject.Point.Pos, " ")
+		longitude, _ = strconv.ParseFloat(coords[0], 64)
 	}
-	coords := strings.Split(response.Response.ObjectCollection.Members[0].GeoObject.Point.Pos, " ")
-	longitude, _ := strconv.ParseFloat(coords[0], 64)
 	return longitude
 }
 
 // CountryCode returns country code of first member
 func (response *YaGeoResponse) CountryCode() string {
-	if len(response.Response.ObjectCollection.Members) == 0 {
-		return ""
+	str := ""
+	if len(response.Response.ObjectCollection.Members) > 0 {
+		str = response.Response.ObjectCollection.Members[0].GeoObject.MetaData.Meta.Address.CountryCode
 	}
-	return response.Response.ObjectCollection.Members[0].GeoObject.MetaData.Meta.Address.CountryCode
+	return str
 }
 
 // PostalCode returns postal code of first member
 func (response *YaGeoResponse) PostalCode() string {
-	if len(response.Response.ObjectCollection.Members) == 0 {
-		return ""
+	str := ""
+	if len(response.Response.ObjectCollection.Members) > 0 {
+		str = response.Response.ObjectCollection.Members[0].GeoObject.MetaData.Meta.Address.PostalCode
 	}
-	return response.Response.ObjectCollection.Members[0].GeoObject.MetaData.Meta.Address.PostalCode
+	return str
 }
 
 // AddressComponents returns array of address components of first member
 func (response *YaGeoResponse) AddressComponents() *[]YaGeoAddressComponent {
-	if len(response.Response.ObjectCollection.Members) == 0 {
-		return nil
+	var arr *[]YaGeoAddressComponent = nil
+	if len(response.Response.ObjectCollection.Members) > 0 {
+		arr = &response.Response.ObjectCollection.Members[0].GeoObject.MetaData.Meta.Address.Components
 	}
-	return &response.Response.ObjectCollection.Members[0].GeoObject.MetaData.Meta.Address.Components
+	return arr
 }
 
 // Country returns country name for first address
