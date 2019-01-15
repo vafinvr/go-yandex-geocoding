@@ -203,3 +203,22 @@ func TestYaGeoMember_House(t *testing.T) {
 		}
 	})
 }
+
+func TestYaGeoMember_RangeToMember(t *testing.T) {
+	key := os.Getenv("YAGEO_KEY")
+	response1, err1 := New(key).Find("Челябинск, Захаренко, 2")
+	members1 := *response1.Members()
+	response2, err2 := New(key).Find("Челябинск, Захаренко, 5")
+	members2 := *response2.Members()
+	t.Run("Get range to member", func(t *testing.T) {
+		if err1 != nil {
+			t.Errorf("YaGeoMember.RangeToMember() has error: %v", err1.Error())
+		}
+		if err2 != nil {
+			t.Errorf("YaGeoMember.RangeToMember() has error: %v", err2.Error())
+		}
+		if got := members1[0].RangeToMember(&members2[0]); got != 143.70860825840776 {
+			t.Errorf("YaGeoMember.RangeToMember() = %v, want %v", got, 143.70860825840776)
+		}
+	})
+}

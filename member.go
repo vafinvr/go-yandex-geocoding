@@ -1,6 +1,7 @@
 package yageocoding
 
 import (
+	"math"
 	"strconv"
 	"strings"
 )
@@ -142,6 +143,20 @@ func (member *YaGeoMember) Street() string {
 		}
 	}
 	return str
+}
+
+// RangeToResponse returns range in meters to another address by completed response
+func (member *YaGeoMember) RangeToMember(target *YaGeoMember) float64 {
+	earthRadius := float64(6371000) // Earth's radius in meters
+	difLat := deg2rad(member.Latitude() - target.Latitude())
+	difLng := deg2rad(member.Longitude() - target.Longitude())
+	a := math.Sin(difLat/2)*math.Sin(difLat/2) +
+		math.Cos(target.Latitude())*math.Cos(member.Latitude())*
+			math.Sin(difLng/2)*math.Sin(difLng/2)
+	c := 2 * math.Asin(math.Sqrt(a))
+	distance := earthRadius * c
+
+	return distance
 }
 
 // House returns house designation
