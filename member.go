@@ -31,36 +31,22 @@ type YaGeoMemberMetaData struct {
 // Coordinates returns Latitude and Longitude of member
 func (member *YaGeoMember) Coordinates() (latitude float64, longitude float64) {
 	coords := strings.Split(member.GeoObject.Point.Pos, " ")
-	latitude, errlat := strconv.ParseFloat(coords[1], 64)
-	if errlat != nil {
-		return 0, 0
-	}
-
-	longitude, errlon := strconv.ParseFloat(coords[0], 64)
-	if errlon != nil {
-		return 0, 0
-	}
-
+	latitude, _ = strconv.ParseFloat(coords[1], 64)
+	longitude, _ = strconv.ParseFloat(coords[0], 64)
 	return
 }
 
 // Latitude of member
 func (member *YaGeoMember) Latitude() float64 {
 	coords := strings.Split(member.GeoObject.Point.Pos, " ")
-	latitude, errlat := strconv.ParseFloat(coords[1], 64)
-	if errlat != nil {
-		return 0
-	}
+	latitude, _ := strconv.ParseFloat(coords[1], 64)
 	return latitude
 }
 
 // Longitude of member
 func (member *YaGeoMember) Longitude() float64 {
 	coords := strings.Split(member.GeoObject.Point.Pos, " ")
-	longitude, errlon := strconv.ParseFloat(coords[0], 64)
-	if errlon != nil {
-		return 0
-	}
+	longitude, _ := strconv.ParseFloat(coords[0], 64)
 	return longitude
 }
 
