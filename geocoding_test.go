@@ -29,6 +29,20 @@ func TestYaGeoInstance_RangeBtw(t *testing.T) {
 			want:    143.70860825840776,
 			wantErr: false,
 		},
+		{
+			name:    "Range test error 1",
+			fields:  fields{key},
+			args:    args{"SomePlaceLOL_404_notFound", "Челябинск, Захаренко, 5"},
+			want:    0,
+			wantErr: true,
+		},
+		{
+			name:    "Range test error 2",
+			fields:  fields{key},
+			args:    args{"Челябинск, Захаренко, 2", "SomePlaceLOL_404_notFound_GiveMeErrorPlease"},
+			want:    0,
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -180,6 +194,12 @@ func TestYaGeoInstance_Find(t *testing.T) {
 			fields{os.Getenv("YAGEO_KEY")},
 			args{"Челябинск, Захаренко, 2"},
 			false,
+		},
+		{
+			"Test Find() function error",
+			fields{os.Getenv("YAGEO_KEY")},
+			args{"SomePlaceLOL_404_notFound"},
+			true,
 		},
 	}
 	for _, tt := range tests {

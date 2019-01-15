@@ -68,7 +68,7 @@ func (ygi *YaGeoInstance) RangeBtw(address1, address2 string) (float64, error) {
 		return 0, err1
 	}
 	addr2, err2 := ygi.Find(address2)
-	if err1 != nil {
+	if err2 != nil {
 		return 0, err2
 	}
 
