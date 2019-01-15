@@ -201,6 +201,12 @@ func TestYaGeoInstance_Find(t *testing.T) {
 			args{"SomePlaceLOL_404_notFound"},
 			true,
 		},
+		{
+			"Test Find() function error 2",
+			fields{"SOME_UNAVAILABLE_KEY"},
+			args{""},
+			true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

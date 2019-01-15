@@ -15,6 +15,10 @@ type YaGeoResponse struct {
 	Response struct {
 		ObjectCollection YaGeoObjectCollection `json:"GeoObjectCollection"`
 	} `json:"response"`
+	Error struct {
+		Status  string `json:"status"`
+		Message string `json:"message"`
+	} `json:"error"`
 }
 
 // YaGeoObjectCollection contains metadata and members of response
@@ -44,21 +48,25 @@ func New(key string) *YaGeoInstance {
 
 // Find returns result of search by address
 func (ygi *YaGeoInstance) Find(address string) (result *YaGeoResponse, err error) {
-	resp, err := http.Get(fmt.Sprintf("https://geocode-maps.yandex.ru/1.x/?format=json&geocode=%v&apikey=%v", address, ygi.Key))
-	if err != nil {
-		return result, err
+	err = nil
+	resp, getErr := http.Get(fmt.Sprintf("https://geocode-maps.yandex.ru/1.x/?format=json&geocode=%v&apikey=%v", address, ygi.Key))
+	if getErr != nil {
+		err = getErr
+	} else {
+		parseErr := json.NewDecoder(resp.Body).Decode(&result)
+		if parseErr != nil {
+			err = parseErr
+		} else {
+			if result.Error.Status != "" {
+				err = errors.New(result.Error.Message)
+			} else {
+				if len(result.Response.ObjectCollection.Members) == 0 {
+					err = errors.New("Not found")
+				}
+			}
+		}
 	}
-
-	err = json.NewDecoder(resp.Body).Decode(&result)
-	if err != nil {
-		return result, err
-	}
-
-	if len(result.Response.ObjectCollection.Members) == 0 {
-		return result, errors.New("Not found")
-	}
-
-	return result, nil
+	return result, err
 }
 
 // RangeBtw returns range in meters between two addresses (generates two requests to API)
