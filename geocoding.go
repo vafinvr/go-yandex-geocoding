@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 )
@@ -48,7 +49,7 @@ func New(key string) *YaGeoInstance {
 
 // Find returns result of search by address
 func (ygi *YaGeoInstance) Find(address string) (result *YaGeoResponse, fErr error) {
-	uri := fmt.Sprintf("https://geocode-maps.yandex.ru/1.x/?format=json&geocode=%v", address)
+	uri := fmt.Sprintf("https://geocode-maps.yandex.ru/1.x/?format=json&geocode=%v", url.QueryEscape(address))
 	if ygi.Key != "" {
 		uri += "&apikey=" + ygi.Key
 	}
